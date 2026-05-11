@@ -11,31 +11,18 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Wrench } from 'lucide-react-native';
 import theme from '../../assets/theme';
 import ListBlog from '../components/ListBlog';
-import DetailScreen from './DetailScreen';
 import { useFonts } from 'expo-font';
 
 const { colors, fonts } = theme;
 
-export default function HomeScreen() {
+export default function HomeScreen({ navigation }) {
   const [loaded] = useFonts(fonts);
   const [selectedCategory, setSelectedCategory] = useState('Servis');
-
- 
-  const [selectedItem, setSelectedItem] = useState(null);
+  const [bookmarks, setBookmarks] = useState([]);
 
   if (!loaded) return null;
 
   const categories = ['Servis', 'Oli', 'Ban', 'Aki', 'Cuci'];
-
-
-  if (selectedItem) {
-    return (
-      <DetailScreen
-        item={selectedItem}
-        onBack={() => setSelectedItem(null)}
-      />
-    );
-  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -84,7 +71,7 @@ export default function HomeScreen() {
       <ListBlog
         styles={styles}
         category={selectedCategory}
-        onSelect={setSelectedItem} 
+        onSelect={(item) => navigation.navigate('Detail', { item })}
       />
 
     </SafeAreaView>
@@ -109,6 +96,9 @@ const styles = StyleSheet.create({
     color: colors.dark(),
   },
   listCategory: {
+    paddingVertical: 10,
+  },
+  listBlog: {
     paddingVertical: 10,
   },
 });

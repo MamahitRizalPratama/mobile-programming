@@ -1,3 +1,4 @@
+import React, { useRef } from 'react';
 import {
   View,
   Text,
@@ -7,17 +8,17 @@ import {
   Linking,
   Animated,
 } from 'react-native';
-import { useRef } from 'react';
 import { Clock, Star } from 'lucide-react-native';
 import theme from '../../assets/theme';
 
 const { colors } = theme;
 
-export default function DetailScreen({ item, onBack }) {
+export default function DetailScreen({ route, navigation }) {
+  const { item } = route.params;
 
-  // 🔥 ANIMASI SCALE
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
+  // 🔥 ANIMASI
   const handlePressIn = () => {
     Animated.spring(scaleAnim, {
       toValue: 0.95,
@@ -32,11 +33,10 @@ export default function DetailScreen({ item, onBack }) {
     }).start();
   };
 
-  // 🔥 WHATSAPP FUNCTION
+  // 🔥 WHATSAPP
   const handleBooking = () => {
     const message = `Halo, saya ingin memesan layanan ${item.title} dengan harga ${item.price}`;
     const url = `https://wa.me/6281234567890?text=${encodeURIComponent(message)}`;
-
     Linking.openURL(url);
   };
 
@@ -49,8 +49,9 @@ export default function DetailScreen({ item, onBack }) {
         style={styles.image}
         imageStyle={{ borderBottomLeftRadius: 20, borderBottomRightRadius: 20 }}
       >
-        <TouchableOpacity onPress={onBack} style={styles.backBtn}>
-          <Text style={{ color: '#fff' }}>←</Text>
+        {/* 🔥 FIX BACK BUTTON */}
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+          <Text style={{ color: '#fff', fontSize: 18 }}>←</Text>
         </TouchableOpacity>
 
         <View style={styles.badge}>
@@ -67,7 +68,7 @@ export default function DetailScreen({ item, onBack }) {
         <Text style={styles.price}>{item.price}</Text>
 
         <Text style={styles.desc}>
-          Layanan {item.title} dilakukan oleh mekanik profesional.
+          Layanan {item.title} dilakukan oleh mekanik profesional dan berpengalaman.
         </Text>
 
         <View style={styles.infoRow}>
@@ -78,7 +79,7 @@ export default function DetailScreen({ item, onBack }) {
           <Text style={styles.infoText}>{item.rating}</Text>
         </View>
 
-        {/* 🔥 BUTTON ANIMASI + WA */}
+        {/* 🔥 BUTTON */}
         <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
           <TouchableOpacity
             style={styles.button}
@@ -141,6 +142,13 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
 
+  price: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: colors.primary(),
+    marginBottom: 10,
+  },
+
   desc: {
     fontSize: 14,
     color: colors.textSecondary(),
@@ -170,10 +178,4 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: 'bold',
   },
-  price: {
-  fontSize: 18,
-  fontWeight: 'bold',
-  color: colors.primary(),
-  marginBottom: 10,
-},
 });
