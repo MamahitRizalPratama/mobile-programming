@@ -1,22 +1,45 @@
+import React from 'react';
+
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
 import HomeScreen from '../screen/HomeScreen';
 import DetailScreen from '../screen/DetailScreen';
+import DetailNewsScreen from '../screen/DetailNewsScreen';
 
 const Stack = createNativeStackNavigator();
 
-export default function HomeStack() {
+export default function HomeStack({ bookmarks, setBookmarks }) {
+
   return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="HomeMain"
-        component={HomeScreen}
-        options={{ headerShown: false }}
-      />
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+
+      {/* HOME */}
+      <Stack.Screen name="HomeScreen">
+        {(props) => (
+          <HomeScreen
+            {...props}
+            bookmarks={bookmarks}
+            setBookmarks={setBookmarks}
+          />
+        )}
+      </Stack.Screen>
+
+      {/* DETAIL SERVICE */}
       <Stack.Screen
         name="Detail"
         component={DetailScreen}
-        options={{ title: 'Detail Servis' }}
       />
+
+      {/* DETAIL NEWS */}
+      <Stack.Screen
+        name="DetailNews"
+        component={DetailNewsScreen}
+      />
+
     </Stack.Navigator>
   );
 }
