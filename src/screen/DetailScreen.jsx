@@ -18,7 +18,7 @@ export default function DetailScreen({ route, navigation }) {
 
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
-  // 🔥 ANIMASI
+  //  ANIMASI
   const handlePressIn = () => {
     Animated.spring(scaleAnim, {
       toValue: 0.95,
@@ -49,7 +49,7 @@ export default function DetailScreen({ route, navigation }) {
         style={styles.image}
         imageStyle={{ borderBottomLeftRadius: 20, borderBottomRightRadius: 20 }}
       >
-        {/* 🔥 FIX BACK BUTTON */}
+        {/*  FIX BACK BUTTON */}
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
           <Text style={{ color: '#fff', fontSize: 18 }}>←</Text>
         </TouchableOpacity>
@@ -64,7 +64,7 @@ export default function DetailScreen({ route, navigation }) {
 
         <Text style={styles.title}>{item.title}</Text>
 
-        {/* 🔥 HARGA */}
+        {/*  HARGA */}
         <Text style={styles.price}>{item.price}</Text>
 
         <Text style={styles.desc}>
@@ -79,7 +79,7 @@ export default function DetailScreen({ route, navigation }) {
           <Text style={styles.infoText}>{item.rating}</Text>
         </View>
 
-        {/* 🔥 BUTTON */}
+        {/*  BUTTON */}
         <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
           <TouchableOpacity
             style={styles.button}

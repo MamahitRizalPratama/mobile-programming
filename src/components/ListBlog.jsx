@@ -10,15 +10,17 @@ import {
 
 import theme from "../../assets/theme";
 import { Clock, Star, Bookmark } from "lucide-react-native";
+import { useNavigation } from "@react-navigation/native";
 
 const { colors } = theme;
 
 export default function ListBlog({
   styles,
   category,
-  onSelect,
   onBookmark,
 }) {
+
+  const navigation = useNavigation();
 
   const data = [
     {
@@ -75,7 +77,6 @@ export default function ListBlog({
   return (
     <ScrollView>
 
-      {/* TITLE */}
       <Text
         style={{
           marginLeft: 24,
@@ -143,18 +144,18 @@ export default function ListBlog({
 
               <TouchableOpacity
                 key={item.id}
-                onPress={() => onSelect(item)}
+                onPress={() =>
+                  navigation.navigate("Detail", { item })
+                }
               >
 
                 <View style={itemVertical.cardItem}>
 
-                  {/* IMAGE */}
                   <Image
                     style={itemVertical.cardImage}
                     source={{ uri: item.image }}
                   />
 
-                  {/* CONTENT */}
                   <View style={itemVertical.cardContent}>
 
                     <Text style={itemVertical.cardCategory}>
@@ -192,7 +193,6 @@ export default function ListBlog({
                     </View>
                   </View>
 
-                  {/* BOOKMARK */}
                   <TouchableOpacity
                     style={itemVertical.bookmarkBtn}
                     onPress={() => onBookmark(item)}

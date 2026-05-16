@@ -16,6 +16,7 @@ import HomeStack from './src/navigation/HomeStack';
 import DiscoverScreen from './src/screen/DiscoverScreen';
 
 import BookmarkScreen from './src/screen/BookmarkScreen';
+import DiscoverStack from './src/navigation/DiscoverStack';
 
 const Tab = createBottomTabNavigator();
 
@@ -73,7 +74,7 @@ export default function App() {
         {/* DISCOVER */}
         <Tab.Screen
           name="Discover"
-          component={DiscoverScreen}
+          component={DiscoverStack}
         />
 
         {/* BOOKMARK */}

@@ -1,191 +1,234 @@
-import React from "react";
+import React from 'react';
 import {
-  ScrollView,
-  StyleSheet,
-  Text,
   View,
-  ImageBackground,
+  Text,
+  StyleSheet,
   Image,
-} from "react-native";
-import theme from "../../assets/theme";
-import { Star, Tag } from "lucide-react-native";
+  TouchableOpacity,
+  Animated,
+} from 'react-native';
+
+import { useNavigation } from '@react-navigation/native';
+import theme from '../../assets/theme';
 
 const { colors } = theme;
 
 export default function DiscoverScreen() {
+
+  const navigation = useNavigation();
+
+  const scrollY = new Animated.Value(0);
+
+  const newsData = [
+    {
+      id: 1,
+      title: 'Tips Merawat Motor Saat Musim Hujan',
+      category: 'Perawatan',
+      image:
+        'https://images.unsplash.com/photo-1558981403-c5f9899a28bc',
+      desc:
+        'Musim hujan dapat menyebabkan beberapa bagian motor cepat rusak jika tidak dirawat dengan baik.',
+      content:
+        'Saat musim hujan, pengendara motor perlu memperhatikan kebersihan rantai, rem, dan oli mesin. Air hujan dapat mempercepat karat pada bagian logam sehingga penting untuk mencuci motor setelah terkena hujan.',
+    },
+
+    {
+      id: 2,
+      title: 'Kapan Waktu Ideal Ganti Oli?',
+      category: 'Oli',
+      image:
+        'https://images.unsplash.com/photo-1625047509248-ec889cbff17f',
+      desc:
+        'Penggantian oli secara rutin membuat performa mesin lebih awet.',
+      content:
+        'Penggantian oli motor disarankan setiap 2000-3000 km tergantung jenis oli dan penggunaan kendaraan. Oli yang telat diganti dapat menyebabkan mesin cepat panas.',
+    },
+
+    {
+      id: 3,
+      title: 'Cara Mengetahui Aki Motor Mulai Lemah',
+      category: 'Aki',
+      image:
+        'https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2',
+      desc:
+        'Aki motor memiliki usia pemakaian tertentu dan perlu diperiksa secara berkala.',
+      content:
+        'Tanda aki mulai lemah biasanya ditunjukkan oleh starter yang sulit, lampu redup, dan klakson melemah. Segera lakukan pengecekan agar motor tidak mogok.',
+    },
+
+    {
+      id: 4,
+      title: 'Penyebab Ban Motor Cepat Botak',
+      category: 'Ban',
+      image:
+        'https://images.unsplash.com/photo-1597764690523-15bea4c581c9',
+      desc:
+        'Ban cepat aus bisa dipengaruhi gaya berkendara dan tekanan angin.',
+      content:
+        'Tekanan ban yang tidak sesuai dan sering melakukan pengereman mendadak membuat ban cepat botak. Pastikan tekanan ban sesuai standar.',
+    },
+  ];
+
+  const headerTranslate = scrollY.interpolate({
+    inputRange: [0, 120],
+    outputRange: [0, -80],
+    extrapolate: 'clamp',
+  });
+
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
 
-      {/* 🔥 HEADER */}
-      <Text style={styles.header}>Discover</Text>
+      {/* HEADER */}
+      <Animated.View
+        style={[
+          styles.header,
+          {
+            transform: [
+              {
+                translateY: headerTranslate,
+              },
+            ],
+          },
+        ]}
+      >
+        <Text style={styles.headerTitle}>
+          Discover News
+        </Text>
 
-      {/* 🔥 PROMO */}
-      <Text style={styles.sectionTitle}>🔥 Promo Hari Ini</Text>
+        <Text style={styles.headerSub}>
+          Informasi & berita seputar servis motor
+        </Text>
+      </Animated.View>
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        <View style={{ ...styles.promoCard, marginLeft: 24 }}>
-          <ImageBackground
-            style={styles.promoImage}
-            imageStyle={{ borderRadius: 15 }}
-            source={{
-              uri: "https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2",
-            }}
+      {/* LIST */}
+      <Animated.ScrollView
+        contentContainerStyle={{
+          paddingTop: 120,
+          paddingBottom: 100,
+        }}
+        showsVerticalScrollIndicator={false}
+        onScroll={Animated.event(
+          [
+            {
+              nativeEvent: {
+                contentOffset: {
+                  y: scrollY,
+                },
+              },
+            },
+          ],
+          {
+            useNativeDriver: true,
+          }
+        )}
+      >
+
+        {newsData.map((item) => (
+
+          <TouchableOpacity
+            key={item.id}
+            style={styles.card}
+            activeOpacity={0.8}
+            onPress={() =>
+              navigation.navigate('DetailNews', {
+                item,
+              })
+            }
           >
-            <View style={styles.overlay}>
-              <Text style={styles.promoTitle}>Diskon 20%</Text>
-              <Text style={styles.promoText}>Servis Mesin</Text>
+
+            <Image
+              source={{ uri: item.image }}
+              style={styles.image}
+            />
+
+            <View style={styles.content}>
+
+              <Text style={styles.category}>
+                {item.category}
+              </Text>
+
+              <Text style={styles.title}>
+                {item.title}
+              </Text>
+
+              <Text style={styles.desc}>
+                {item.desc}
+              </Text>
+
             </View>
-          </ImageBackground>
-        </View>
-
-        <View style={{ ...styles.promoCard, marginRight: 24 }}>
-          <ImageBackground
-            style={styles.promoImage}
-            imageStyle={{ borderRadius: 15 }}
-            source={{
-              uri: "https://images.unsplash.com/photo-1517520287167-4bbf64a00d66",
-            }}
-          >
-            <View style={styles.overlay}>
-              <Text style={styles.promoTitle}>Cuci Gratis</Text>
-              <Text style={styles.promoText}>Setelah Servis</Text>
-            </View>
-          </ImageBackground>
-        </View>
-      </ScrollView>
-
-      {/* ⭐ BEST SERVICE */}
-      <Text style={styles.sectionTitle}>⭐ Layanan Terbaik</Text>
-
-      <View style={styles.card}>
-        <Image
-          style={styles.image}
-          source={{
-            uri: "https://images.unsplash.com/photo-1558981403-c5f9899a28bc",
-          }}
-        />
-        <View style={styles.cardContent}>
-          <Text style={styles.title}>Servis Mesin Lengkap</Text>
-          <View style={styles.row}>
-            <Star size={14} color={colors.accent()} />
-            <Text style={styles.text}>4.9</Text>
-          </View>
-        </View>
-      </View>
-
-      <View style={styles.card}>
-        <Image
-          style={styles.image}
-          source={{
-            uri: "https://images.unsplash.com/photo-1625047509248-ec889cbff17f",
-          }}
-        />
-        <View style={styles.cardContent}>
-          <Text style={styles.title}>Ganti Oli Premium</Text>
-          <View style={styles.row}>
-            <Star size={14} color={colors.accent()} />
-            <Text style={styles.text}>4.8</Text>
-          </View>
-        </View>
-      </View>
-
-      {/* 🆕 LAYANAN BARU */}
-      <Text style={styles.sectionTitle}>🆕 Layanan Baru</Text>
-
-      <View style={styles.card}>
-        <Image
-          style={styles.image}
-          source={{
-            uri: "https://images.unsplash.com/photo-1597764690523-15bea4c581c9",
-          }}
-        />
-        <View style={styles.cardContent}>
-          <Text style={styles.title}>Tambal Ban Express</Text>
-          <View style={styles.row}>
-            <Tag size={14} color={colors.primary()} />
-            <Text style={styles.text}>Baru</Text>
-          </View>
-        </View>
-      </View>
-
-    </ScrollView>
+          </TouchableOpacity>
+        ))}
+      </Animated.ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+
   container: {
     flex: 1,
     backgroundColor: colors.light(),
   },
+
   header: {
-    fontSize: 22,
-    fontWeight: "bold",
-    margin: 24,
-    color: colors.dark(),
-  },
-  sectionTitle: {
-    marginLeft: 24,
-    marginBottom: 10,
-    fontSize: 16,
-    fontWeight: "600",
-    color: colors.primary(),
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 99,
+    backgroundColor: colors.light(),
+    paddingTop: 60,
+    paddingHorizontal: 24,
+    paddingBottom: 20,
   },
 
-  // PROMO
-  promoCard: {
-    width: 260,
-    marginRight: 15,
-  },
-  promoImage: {
-    height: 150,
-  },
-  overlay: {
-    flex: 1,
-    justifyContent: "flex-end",
-    padding: 15,
-    backgroundColor: "rgba(0,0,0,0.3)",
-    borderRadius: 15,
-  },
-  promoTitle: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  promoText: {
-    color: "#fff",
-    fontSize: 12,
-  },
-
-  // CARD
-  card: {
-    flexDirection: "row",
-    marginHorizontal: 24,
-    marginBottom: 15,
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    elevation: 2,
-  },
-  image: {
-    width: 90,
-    height: 90,
-    borderRadius: 10,
-  },
-  cardContent: {
-    padding: 10,
-    justifyContent: "space-between",
-  },
-  title: {
-    fontSize: 14,
-    fontWeight: "bold",
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
     color: colors.dark(),
   },
-  text: {
-    fontSize: 12,
+
+  headerSub: {
+    marginTop: 5,
     color: colors.textSecondary(),
+    fontSize: 14,
   },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 5,
+
+  card: {
+    backgroundColor: '#fff',
+    marginHorizontal: 20,
+    marginBottom: 20,
+    borderRadius: 18,
+    overflow: 'hidden',
+    elevation: 3,
+  },
+
+  image: {
+    width: '100%',
+    height: 200,
+  },
+
+  content: {
+    padding: 15,
+  },
+
+  category: {
+    color: colors.primary(),
+    fontSize: 12,
+    marginBottom: 5,
+    fontWeight: '600',
+  },
+
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: colors.dark(),
+    marginBottom: 8,
+  },
+
+  desc: {
+    fontSize: 13,
+    color: colors.textSecondary(),
+    lineHeight: 20,
   },
 });
