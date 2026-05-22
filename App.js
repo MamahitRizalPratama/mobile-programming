@@ -12,17 +12,25 @@ import {
 } from 'lucide-react-native';
 
 import HomeStack from './src/navigation/HomeStack';
-
-import DiscoverScreen from './src/screen/DiscoverScreen';
-
-import BookmarkScreen from './src/screen/BookmarkScreen';
 import DiscoverStack from './src/navigation/DiscoverStack';
+import BookmarkScreen from './src/screen/BookmarkScreen';
+import AuthStack from './src/navigation/AuthStack';
 
 const Tab = createBottomTabNavigator();
 
 export default function App() {
 
+  const [isLogin, setIsLogin] = useState(false);
+
   const [bookmarks, setBookmarks] = useState([]);
+
+  if (!isLogin) {
+    return (
+      <NavigationContainer>
+        <AuthStack setIsLogin={setIsLogin} />
+      </NavigationContainer>
+    );
+  }
 
   return (
     <NavigationContainer>
@@ -61,7 +69,6 @@ export default function App() {
         })}
       >
 
-        {/* HOME */}
         <Tab.Screen name="Home">
           {() => (
             <HomeStack
@@ -71,13 +78,11 @@ export default function App() {
           )}
         </Tab.Screen>
 
-        {/* DISCOVER */}
         <Tab.Screen
           name="Discover"
           component={DiscoverStack}
         />
 
-        {/* BOOKMARK */}
         <Tab.Screen name="Bookmark">
           {() => (
             <BookmarkScreen
@@ -86,17 +91,8 @@ export default function App() {
           )}
         </Tab.Screen>
 
-        {/* PROFILE */}
-        <Tab.Screen
-          name="Profile"
-          component={DummyScreen}
-        />
-
       </Tab.Navigator>
+
     </NavigationContainer>
   );
-}
-
-function DummyScreen() {
-  return null;
 }
