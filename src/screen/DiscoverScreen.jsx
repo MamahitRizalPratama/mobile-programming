@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   Image,
   TouchableOpacity,
   Animated,
+  TextInput,
 } from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
@@ -18,6 +19,8 @@ export default function DiscoverScreen() {
   const navigation = useNavigation();
 
   const scrollY = new Animated.Value(0);
+
+  const [search, setSearch] = useState('');
 
   const newsData = [
     {
@@ -69,6 +72,21 @@ export default function DiscoverScreen() {
     },
   ];
 
+  // SEARCH FILTER
+  const filteredNews = newsData.filter(
+    (item) =>
+      item.title
+        .toLowerCase()
+        .includes(search.toLowerCase()) ||
+      item.category
+        .toLowerCase()
+        .includes(search.toLowerCase()) ||
+      item.id
+        .toString()
+        .includes(search)
+  );
+
+  // HEADER ANIMATION
   const headerTranslate = scrollY.interpolate({
     inputRange: [0, 120],
     outputRange: [0, -80],
@@ -91,6 +109,7 @@ export default function DiscoverScreen() {
           },
         ]}
       >
+
         <Text style={styles.headerTitle}>
           Discover News
         </Text>
@@ -98,12 +117,22 @@ export default function DiscoverScreen() {
         <Text style={styles.headerSub}>
           Informasi & berita seputar servis motor
         </Text>
+
+        {/* SEARCH */}
+        <TextInput
+          placeholder="Cari berita / id berita..."
+          placeholderTextColor="#999"
+          value={search}
+          onChangeText={setSearch}
+          style={styles.searchInput}
+        />
+
       </Animated.View>
 
       {/* LIST */}
       <Animated.ScrollView
         contentContainerStyle={{
-          paddingTop: 120,
+          paddingTop: 180,
           paddingBottom: 100,
         }}
         showsVerticalScrollIndicator={false}
@@ -123,41 +152,56 @@ export default function DiscoverScreen() {
         )}
       >
 
-        {newsData.map((item) => (
+        {filteredNews.length === 0 ? (
 
-          <TouchableOpacity
-            key={item.id}
-            style={styles.card}
-            activeOpacity={0.8}
-            onPress={() =>
-              navigation.navigate('DetailNews', {
-                item,
-              })
-            }
-          >
+          <Text style={styles.empty}>
+            Berita tidak ditemukan
+          </Text>
 
-            <Image
-              source={{ uri: item.image }}
-              style={styles.image}
-            />
+        ) : (
 
-            <View style={styles.content}>
+          filteredNews.map((item) => (
 
-              <Text style={styles.category}>
-                {item.category}
-              </Text>
+            <TouchableOpacity
+              key={item.id}
+              style={styles.card}
+              activeOpacity={0.8}
+              onPress={() =>
+                navigation.navigate('DetailNews', {
+                  item,
+                })
+              }
+            >
 
-              <Text style={styles.title}>
-                {item.title}
-              </Text>
+              <Image
+                source={{ uri: item.image }}
+                style={styles.image}
+              />
 
-              <Text style={styles.desc}>
-                {item.desc}
-              </Text>
+              <View style={styles.content}>
 
-            </View>
-          </TouchableOpacity>
-        ))}
+                <Text style={styles.category}>
+                  {item.category}
+                </Text>
+
+                <Text style={styles.title}>
+                  {item.title}
+                </Text>
+
+                <Text style={styles.desc}>
+                  {item.desc}
+                </Text>
+
+                {/* ID BERITA */}
+                <Text style={styles.newsId}>
+                  ID Berita : {item.id}
+                </Text>
+
+              </View>
+            </TouchableOpacity>
+          ))
+        )}
+
       </Animated.ScrollView>
     </View>
   );
@@ -192,6 +236,17 @@ const styles = StyleSheet.create({
     marginTop: 5,
     color: colors.textSecondary(),
     fontSize: 14,
+    marginBottom: 15,
+  },
+
+  // SEARCH
+  searchInput: {
+    backgroundColor: '#fff',
+    borderRadius: 14,
+    paddingHorizontal: 15,
+    height: 50,
+    elevation: 2,
+    color: colors.dark(),
   },
 
   card: {
@@ -230,5 +285,18 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: colors.textSecondary(),
     lineHeight: 20,
+  },
+
+  newsId: {
+    marginTop: 10,
+    color: colors.primary(),
+    fontWeight: 'bold',
+    fontSize: 12,
+  },
+
+  empty: {
+    textAlign: 'center',
+    marginTop: 50,
+    color: colors.textSecondary(),
   },
 });
