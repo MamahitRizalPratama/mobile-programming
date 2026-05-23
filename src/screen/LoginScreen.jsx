@@ -2,13 +2,16 @@ import React, { useState } from 'react';
 
 import {
   View,
-  Text,
+ Text,
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 
 import theme from '../../assets/theme';
+
+import { supabase } from '../services/supabase';
 
 const { colors } = theme;
 
@@ -17,8 +20,52 @@ export default function LoginScreen({
   setIsLogin,
 }) {
 
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+
   const [password, setPassword] = useState('');
+
+  // ================= LOGIN =================
+  const handleLogin = async () => {
+
+    if (!email || !password) {
+      Alert.alert('Isi email dan password');
+      return;
+    }
+
+    try {
+
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('email', email)
+        .eq('password', password);
+
+      if (error) {
+        console.log(error);
+        Alert.alert('Login gagal');
+        return;
+      }
+
+      if (data.length > 0) {
+
+        Alert.alert('Login berhasil');
+
+        setIsLogin(true);
+
+      } else {
+
+        Alert.alert('Email atau password salah');
+
+      }
+
+    } catch (error) {
+
+      console.log(error);
+
+      Alert.alert('Terjadi kesalahan');
+
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -31,13 +78,15 @@ export default function LoginScreen({
         Login to continue
       </Text>
 
+      {/* EMAIL */}
       <TextInput
-        placeholder="Username"
-        value={username}
-        onChangeText={setUsername}
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
         style={styles.input}
       />
 
+      {/* PASSWORD */}
       <TextInput
         placeholder="Password"
         secureTextEntry
@@ -46,15 +95,17 @@ export default function LoginScreen({
         style={styles.input}
       />
 
+      {/* BUTTON LOGIN */}
       <TouchableOpacity
         style={styles.button}
-        onPress={() => setIsLogin(true)}
+        onPress={handleLogin}
       >
         <Text style={styles.buttonText}>
           Login
         </Text>
       </TouchableOpacity>
 
+      {/* REGISTER */}
       <TouchableOpacity
         onPress={() => navigation.navigate('Register')}
       >

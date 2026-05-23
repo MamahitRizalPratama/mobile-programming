@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+
 import {
   View,
   Text,
@@ -10,13 +11,14 @@ import {
 } from 'react-native';
 
 import theme from '../../assets/theme';
-import API from '../services/api';
+
+import { supabase } from '../services/supabase';
 
 const { colors } = theme;
 
 export default function ProfileScreen() {
 
-  const [users, setUsers] = useState([]);
+  const [profiles, setProfiles] = useState([]);
 
   const [name, setName] = useState('');
 
@@ -25,101 +27,112 @@ export default function ProfileScreen() {
   const [selectedId, setSelectedId] = useState(null);
 
   // ================= GET =================
-  const getUsers = async () => {
-    try {
+  const getProfiles = async () => {
 
-      const response = await API.get('/users');
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*');
 
-      setUsers(response.data);
-
-    } catch (error) {
+    if (error) {
       console.log(error);
+      return;
     }
+
+    setProfiles(data);
   };
 
   useEffect(() => {
-    getUsers();
+    getProfiles();
   }, []);
 
   // ================= POST =================
-  const addUser = async () => {
+  const addProfile = async () => {
 
     if (!name || !email) {
       Alert.alert('Isi semua data');
       return;
     }
 
-    try {
+    const { data, error } = await supabase
+      .from('profiles')
+      .insert([
+        {
+          name,
+          email,
+        },
+      ])
+      .select();
 
-      const response = await API.post('/users', {
-        name,
-        email,
-      });
-
-      setUsers([...users, response.data]);
-
-      setName('');
-      setEmail('');
-
-      Alert.alert('Data berhasil ditambah');
-
-    } catch (error) {
+    if (error) {
       console.log(error);
+      return;
     }
+
+    setProfiles([...profiles, data[0]]);
+
+    setName('');
+    setEmail('');
+
+    Alert.alert('Data berhasil ditambah');
   };
 
   // ================= PUT =================
-  const updateUser = async () => {
+  const updateProfile = async () => {
 
-    try {
-
-      const response = await API.put(`/users/${selectedId}`, {
+    const { data, error } = await supabase
+      .from('profiles')
+      .update({
         name,
         email,
-      });
+      })
+      .eq('id', selectedId)
+      .select();
 
-      const updatedData = users.map((item) =>
-        item.id === selectedId
-          ? response.data
-          : item
-      );
-
-      setUsers(updatedData);
-
-      setSelectedId(null);
-
-      setName('');
-      setEmail('');
-
-      Alert.alert('Data berhasil diupdate');
-
-    } catch (error) {
+    if (error) {
       console.log(error);
+      return;
     }
+
+    const updatedData = profiles.map((item) =>
+      item.id === selectedId
+        ? data[0]
+        : item
+    );
+
+    setProfiles(updatedData);
+
+    setSelectedId(null);
+
+    setName('');
+    setEmail('');
+
+    Alert.alert('Data berhasil diupdate');
   };
 
   // ================= DELETE =================
-  const deleteUser = async (id) => {
+  const deleteProfile = async (id) => {
 
-    try {
+    const { error } = await supabase
+      .from('profiles')
+      .delete()
+      .eq('id', id);
 
-      await API.delete(`/users/${id}`);
-
-      const filtered = users.filter(
-        (item) => item.id !== id
-      );
-
-      setUsers(filtered);
-
-      Alert.alert('Data berhasil dihapus');
-
-    } catch (error) {
+    if (error) {
       console.log(error);
+      return;
     }
+
+    const filtered = profiles.filter(
+      (item) => item.id !== id
+    );
+
+    setProfiles(filtered);
+
+    Alert.alert('Data berhasil dihapus');
   };
 
   // ================= EDIT =================
-  const selectUser = (item) => {
+  const selectProfile = (item) => {
 
     setSelectedId(item.id);
 
@@ -132,7 +145,7 @@ export default function ProfileScreen() {
     <View style={styles.container}>
 
       <Text style={styles.title}>
-        Profile REST API
+        Profile Supabase CRUD
       </Text>
 
       {/* INPUT */}
@@ -154,7 +167,7 @@ export default function ProfileScreen() {
       {selectedId ? (
         <TouchableOpacity
           style={styles.button}
-          onPress={updateUser}
+          onPress={updateProfile}
         >
           <Text style={styles.buttonText}>
             UPDATE
@@ -163,7 +176,7 @@ export default function ProfileScreen() {
       ) : (
         <TouchableOpacity
           style={styles.button}
-          onPress={addUser}
+          onPress={addProfile}
         >
           <Text style={styles.buttonText}>
             POST DATA
@@ -173,8 +186,9 @@ export default function ProfileScreen() {
 
       {/* LIST */}
       <FlatList
-        data={users}
+        data={profiles}
         keyExtractor={(item) => item.id.toString()}
+        showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
 
           <View style={styles.card}>
@@ -191,7 +205,7 @@ export default function ProfileScreen() {
 
               <TouchableOpacity
                 style={styles.editBtn}
-                onPress={() => selectUser(item)}
+                onPress={() => selectProfile(item)}
               >
                 <Text style={styles.btnText}>
                   PUT
@@ -200,7 +214,7 @@ export default function ProfileScreen() {
 
               <TouchableOpacity
                 style={styles.deleteBtn}
-                onPress={() => deleteUser(item.id)}
+                onPress={() => deleteProfile(item.id)}
               >
                 <Text style={styles.btnText}>
                   DELETE
