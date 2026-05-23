@@ -13,7 +13,10 @@ import {
 
 import HomeStack from './src/navigation/HomeStack';
 import DiscoverStack from './src/navigation/DiscoverStack';
+
 import BookmarkScreen from './src/screen/BookmarkScreen';
+import ProfileScreen from './src/screen/ProfileScreen';
+
 import AuthStack from './src/navigation/AuthStack';
 
 const Tab = createBottomTabNavigator();
@@ -24,6 +27,7 @@ export default function App() {
 
   const [bookmarks, setBookmarks] = useState([]);
 
+  // LOGIN SCREEN
   if (!isLogin) {
     return (
       <NavigationContainer>
@@ -69,6 +73,7 @@ export default function App() {
         })}
       >
 
+        {/* HOME */}
         <Tab.Screen name="Home">
           {() => (
             <HomeStack
@@ -78,11 +83,13 @@ export default function App() {
           )}
         </Tab.Screen>
 
+        {/* DISCOVER */}
         <Tab.Screen
           name="Discover"
           component={DiscoverStack}
         />
 
+        {/* BOOKMARK */}
         <Tab.Screen name="Bookmark">
           {() => (
             <BookmarkScreen
@@ -90,6 +97,12 @@ export default function App() {
             />
           )}
         </Tab.Screen>
+
+        {/* PROFILE */}
+        <Tab.Screen
+          name="Profile"
+          component={ProfileScreen}
+        />
 
       </Tab.Navigator>
 
